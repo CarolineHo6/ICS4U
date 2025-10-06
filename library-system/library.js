@@ -86,7 +86,7 @@ function removeBook(title) {
 };
 
 while (true) {
-    console.log('1. Add a new book \n 2. List available books \n 3. Borrow a book \n 4. Return a book \n 5. List books by author \n 6. Find books before a year \n 7. Remove a book \n 8. Exit program');
+    console.log('1. Add a new book \n2. List available books \n3. Borrow a book \n4. Return a book \n5. List books by author \n6. Find books before a year \n7. Remove a book \n8. Exit program');
     const num = console.log(prompt('What do you want to do?'));
     
     if (num === 1) {
