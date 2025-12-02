@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "BVG Senior Boys Basketball",
+    "shortName": "BVG Sr Boys BB",
+    "school": "Bayview Glen",
+    "sport": "Basketball",
+    "level": "Senior Boys"
+  },
+  {
+    "id": 2,
+    "name": "BVG Junior Girls Volleyball",
+    "shortName": "BVG Jr Girls VB",
+    "school": "Bayview Glen",
+    "sport": "Volleyball",
+    "level": "Junior Girls"
+  },
+  {
+    "id": 3,
+    "name": "St. Andrew's Senior Boys Basketball",
+    "shortName": "SAC Sr Boys BB",
+    "school": "St. Andrew's College",
+    "sport": "Basketball",
+    "level": "Senior Boys"
+  },
+  {
+    "id": 4,
+    "name": "Toronto French Junior Girls Volleyball",
+    "shortName": "TFS Jr Girls VB",
+    "school": "Toronto French School",
+    "sport": "Volleyball",
+    "level": "Junior Girls"
+  },
+  {
+    "id": 5,
+    "name": "BVG Senior Girls Soccer",
+    "shortName": "BVG Sr Girls SC",
+    "school": "Bayview Glen",
+    "sport": "Soccer",
+    "level": "Senior Girls"
+  }
+]
