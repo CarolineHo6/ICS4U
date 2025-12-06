@@ -1,0 +1,56 @@
+[
+    {
+        "id": 101,
+        "code": "MATH101",
+        "name": "Calculus I",
+        "teacherId": 1,
+        "semester": "Fall",
+        "room": "B201",
+        "schedule": "Mon/Wed/Fri 9:00-10:00"
+    },
+    {
+        "id": 102,
+        "code": "SCI201",
+        "name": "General Chemistry",
+        "teacherId": 2,
+        "semester": "Fall",
+        "room": "C102",
+        "schedule": "Tue/Thu 10:30-12:00"
+    },
+    {
+        "id": 103,
+        "code": "ENG105",
+        "name": "Introduction to Literature",
+        "teacherId": 3,
+        "semester": "Spring",
+        "room": "A104",
+        "schedule": "Mon/Wed 11:00-12:30"
+    },
+    {
+        "id": 104,
+        "code": "HIST210",
+        "name": "Modern World History",
+        "teacherId": 4,
+        "semester": "Spring",
+        "room": "D306",
+        "schedule": "Tue/Thu 9:00-10:30"
+    },
+    {
+        "id": 105,
+        "code": "ART150",
+        "name": "Fundamentals of Drawing",
+        "teacherId": 5,
+        "semester": "Fall",
+        "room": "E110",
+        "schedule": "Wed/Fri 1:00-2:30"
+    },
+    {
+        "id": 106,
+        "code": "PE101",
+        "name": "Physical Fitness and Health",
+        "teacherId": 6,
+        "semester": "Spring",
+        "room": "Gym1",
+        "schedule": "Mon/Wed/Fri 8:00-9:00"
+    }
+]

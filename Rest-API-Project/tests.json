@@ -1,0 +1,252 @@
+[
+    {
+        "id": 1,
+        "studentId": 1,
+        "courseId": 101,
+        "testName": "Unit 1 Test",
+        "date": "2025-09-15",
+        "mark": 88,
+        "outOf": 100,
+        "weight": 20
+    },
+    {
+        "id": 2,
+        "studentId": 2,
+        "courseId": 102,
+        "testName": "Chapter 2 Quiz",
+        "date": "2025-09-22",
+        "mark": 17,
+        "outOf": 20,
+        "weight": 10
+    },
+    {
+        "id": 3,
+        "studentId": 3,
+        "courseId": 103,
+        "testName": "Lab Practical",
+        "date": "2025-10-01",
+        "mark": 40,
+        "outOf": 50,
+        "weight": 15
+    },
+    {
+        "id": 4,
+        "studentId": 4,
+        "courseId": 104,
+        "testName": "Midterm Exam",
+        "date": "2025-10-10",
+        "mark": 72,
+        "outOf": 100,
+        "weight": 30
+    },
+    {
+        "id": 5,
+        "studentId": 5,
+        "courseId": 105,
+        "testName": "Vocabulary Test",
+        "date": "2025-09-18",
+        "mark": 45,
+        "outOf": 50,
+        "weight": 10
+    },
+    {
+        "id": 6,
+        "studentId": 6,
+        "courseId": 106,
+        "testName": "Unit 3 Test",
+        "date": "2025-10-05",
+        "mark": 80,
+        "outOf": 100,
+        "weight": 25
+    },
+    {
+        "id": 7,
+        "studentId": 7,
+        "courseId": 101,
+        "testName": "Assignment 1",
+        "date": "2025-09-12",
+        "mark": 18,
+        "outOf": 20,
+        "weight": 10
+    },
+    {
+        "id": 8,
+        "studentId": 8,
+        "courseId": 102,
+        "testName": "Project Presentation",
+        "date": "2025-10-03",
+        "mark": 92,
+        "outOf": 100,
+        "weight": 20
+    },
+    {
+        "id": 9,
+        "studentId": 9,
+        "courseId": 103,
+        "testName": "Unit 2 Quiz",
+        "date": "2025-09-28",
+        "mark": 14,
+        "outOf": 20,
+        "weight": 10
+    },
+    {
+        "id": 10,
+        "studentId": 10,
+        "courseId": 104,
+        "testName": "Final Exam",
+        "date": "2025-12-20",
+        "mark": 85,
+        "outOf": 100,
+        "weight": 40
+    },
+    {
+        "id": 11,
+        "studentId": 11,
+        "courseId": 105,
+        "testName": "Poetry Analysis",
+        "date": "2025-10-07",
+        "mark": 30,
+        "outOf": 35,
+        "weight": 15
+    },
+    {
+        "id": 12,
+        "studentId": 12,
+        "courseId": 106,
+        "testName": "Unit 4 Test",
+        "date": "2025-11-01",
+        "mark": 77,
+        "outOf": 100,
+        "weight": 25
+    },
+    {
+        "id": 13,
+        "studentId": 13,
+        "courseId": 101,
+        "testName": "Unit 1 Assignment",
+        "date": "2025-09-17",
+        "mark": 19,
+        "outOf": 20,
+        "weight": 10
+    },
+    {
+        "id": 14,
+        "studentId": 14,
+        "courseId": 102,
+        "testName": "Chapter 4 Quiz",
+        "date": "2025-10-12",
+        "mark": 16,
+        "outOf": 20,
+        "weight": 10
+    },
+    {
+        "id": 15,
+        "studentId": 15,
+        "courseId": 103,
+        "testName": "Lab Report",
+        "date": "2025-10-20",
+        "mark": 48,
+        "outOf": 50,
+        "weight": 20
+    },
+    {
+        "id": 16,
+        "studentId": 1,
+        "courseId": 104,
+        "testName": "Essay Test",
+        "date": "2025-11-04",
+        "mark": 70,
+        "outOf": 80,
+        "weight": 25
+    },
+    {
+        "id": 17,
+        "studentId": 2,
+        "courseId": 105,
+        "testName": "Listening Test",
+        "date": "2025-09-29",
+        "mark": 42,
+        "outOf": 50,
+        "weight": 15
+    },
+    {
+        "id": 18,
+        "studentId": 3,
+        "courseId": 106,
+        "testName": "Term Project",
+        "date": "2025-11-18",
+        "mark": 90,
+        "outOf": 100,
+        "weight": 30
+    },
+    {
+        "id": 19,
+        "studentId": 4,
+        "courseId": 101,
+        "testName": "Unit 2 Test",
+        "date": "2025-10-14",
+        "mark": 82,
+        "outOf": 100,
+        "weight": 20
+    },
+    {
+        "id": 20,
+        "studentId": 5,
+        "courseId": 102,
+        "testName": "Oral Presentation",
+        "date": "2025-10-25",
+        "mark": 78,
+        "outOf": 100,
+        "weight": 15
+    },
+    {
+        "id": 21,
+        "studentId": 6,
+        "courseId": 103,
+        "testName": "Practical Exam",
+        "date": "2025-11-10",
+        "mark": 44,
+        "outOf": 50,
+        "weight": 20
+    },
+    {
+        "id": 22,
+        "studentId": 7,
+        "courseId": 104,
+        "testName": "Research Paper",
+        "date": "2025-11-14",
+        "mark": 75,
+        "outOf": 100,
+        "weight": 25
+    },
+    {
+        "id": 23,
+        "studentId": 8,
+        "courseId": 105,
+        "testName": "Grammar Test",
+        "date": "2025-10-02",
+        "mark": 48,
+        "outOf": 50,
+        "weight": 15
+    },
+    {
+        "id": 24,
+        "studentId": 9,
+        "courseId": 106,
+        "testName": "Unit 5 Test",
+        "date": "2025-11-22",
+        "mark": 84,
+        "outOf": 100,
+        "weight": 20
+    },
+    {
+        "id": 25,
+        "studentId": 10,
+        "courseId": 101,
+        "testName": "Final Project",
+        "date": "2025-12-10",
+        "mark": 93,
+        "outOf": 100,
+        "weight": 30
+    }
+]
