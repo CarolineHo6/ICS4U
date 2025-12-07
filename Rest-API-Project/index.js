@@ -1,3 +1,4 @@
+// ADDED TRY AND CATCH STUFF TO EACH ROUTE FOR EXTRA ERROR CHECKING
 // importing express and file system (reading and writing files) and path (file path handling)
 import express from 'express';
 import fs from 'fs';
