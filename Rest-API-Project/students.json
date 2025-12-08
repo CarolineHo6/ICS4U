@@ -1,122 +1,121 @@
 [
-    {
-        "id": 1,
-        "firstName": "Ava",
-        "lastName": "Reynolds",
-        "grade": 11,
-        "studentNumber": "S10231",
-        "homeroom": "B201"
-    },
-    {
-        "id": 2,
-        "firstName": "Liam",
-        "lastName": "Carter",
-        "grade": 12,
-        "studentNumber": "S10457",
-        "homeroom": "C102"
-    },
-    {
-        "id": 3,
-        "firstName": "Mia",
-        "lastName": "Nguyen",
-        "grade": 10,
-        "studentNumber": "S09821",
-        "homeroom": "A104"
-    },
-    {
-        "id": 4,
-        "firstName": "Noah",
-        "lastName": "Patel",
-        "grade": 11,
-        "studentNumber": "S10345",
-        "homeroom": "D306"
-    },
-    {
-        "id": 5,
-        "firstName": "Sophia",
-        "lastName": "Wong",
-        "grade": 9,
-        "studentNumber": "S08763",
-        "homeroom": "E110"
-    },
-    {
-        "id": 6,
-        "firstName": "Ethan",
-        "lastName": "Kim",
-        "grade": 12,
-        "studentNumber": "S10590",
-        "homeroom": "Gym1"
-    },
-    {
-        "id": 7,
-        "firstName": "Isabella",
-        "lastName": "Martinez",
-        "grade": 10,
-        "studentNumber": "S09643",
-        "homeroom": "B201"
-    },
-    {
-        "id": 8,
-        "firstName": "Lucas",
-        "lastName": "Smith",
-        "grade": 11,
-        "studentNumber": "S10178",
-        "homeroom": "C102"
-    },
-    {
-        "id": 9,
-        "firstName": "Charlotte",
-        "lastName": "Lee",
-        "grade": 9,
-        "studentNumber": "S08924",
-        "homeroom": "A104"
-    },
-    {
-        "id": 10,
-        "firstName": "Benjamin",
-        "lastName": "Singh",
-        "grade": 12,
-        "studentNumber": "S10722",
-        "homeroom": "D306"
-    },
-    {
-        "id": 11,
-        "firstName": "Amelia",
-        "lastName": "Wilson",
-        "grade": 10,
-        "studentNumber": "S09287",
-        "homeroom": "E110"
-    },
-    {
-        "id": 12,
-        "firstName": "James",
-        "lastName": "Choi",
-        "grade": 11,
-        "studentNumber": "S10289",
-        "homeroom": "Gym1"
-    },
-    {
-        "id": 13,
-        "firstName": "Harper",
-        "lastName": "Brown",
-        "grade": 9,
-        "studentNumber": "S08534",
-        "homeroom": "B201"
-    },
-    {
-        "id": 14,
-        "firstName": "Alexander",
-        "lastName": "Zhang",
-        "grade": 12,
-        "studentNumber": "S10841",
-        "homeroom": "C102"
-    },
-    {
-        "id": 15,
-        "firstName": "Evelyn",
-        "lastName": "Garcia",
-        "grade": 10,
-        "studentNumber": "S09356",
-        "homeroom": "A104"
-    }
+  {
+    "id": 2,
+    "firstName": "Liam",
+    "lastName": "Carter",
+    "grade": 12,
+    "studentNumber": "S10457",
+    "homeroom": "C102"
+  },
+  {
+    "id": 3,
+    "firstName": "Mia",
+    "lastName": "Nguyen",
+    "grade": 10,
+    "studentNumber": "S09821",
+    "homeroom": "A104"
+  },
+  {
+    "id": 4,
+    "firstName": "Noah",
+    "lastName": "Patel",
+    "grade": 11,
+    "studentNumber": "S10345",
+    "homeroom": "D306"
+  },
+  {
+    "id": 5,
+    "firstName": "Sophia",
+    "lastName": "Wong",
+    "grade": 9,
+    "studentNumber": "S08763",
+    "homeroom": "E110"
+  },
+  {
+    "id": 6,
+    "firstName": "Ethan",
+    "lastName": "Kim",
+    "grade": 12,
+    "studentNumber": "S10590",
+    "homeroom": "Gym1"
+  },
+  {
+    "id": 7,
+    "firstName": "Isabella",
+    "lastName": "Martinez",
+    "grade": 10,
+    "studentNumber": "S09643",
+    "homeroom": "B201"
+  },
+  {
+    "id": 8,
+    "firstName": "Lucas",
+    "lastName": "Smith",
+    "grade": 11,
+    "studentNumber": "S10178",
+    "homeroom": "C102"
+  },
+  {
+    "id": 9,
+    "firstName": "Charlotte",
+    "lastName": "Lee",
+    "grade": 9,
+    "studentNumber": "S08924",
+    "homeroom": "A104"
+  },
+  {
+    "id": 10,
+    "firstName": "Benjamin",
+    "lastName": "Singh",
+    "grade": 12,
+    "studentNumber": "S10722",
+    "homeroom": "D306"
+  },
+  {
+    "id": 11,
+    "firstName": "Amelia",
+    "lastName": "Wilson",
+    "grade": 10,
+    "studentNumber": "S09287",
+    "homeroom": "E110"
+  },
+  {
+    "id": 12,
+    "firstName": "James",
+    "lastName": "Choi",
+    "grade": 11,
+    "studentNumber": "S10289",
+    "homeroom": "Gym1"
+  },
+  {
+    "id": 13,
+    "firstName": "Harper",
+    "lastName": "Brown",
+    "grade": 9,
+    "studentNumber": "S08534",
+    "homeroom": "B201"
+  },
+  {
+    "id": 14,
+    "firstName": "Alexander",
+    "lastName": "Zhang",
+    "grade": 12,
+    "studentNumber": "S10841",
+    "homeroom": "C102"
+  },
+  {
+    "id": 15,
+    "firstName": "Evelyn",
+    "lastName": "Garcia",
+    "grade": 10,
+    "studentNumber": "S09356",
+    "homeroom": "A104"
+  },
+  {
+    "id": 16,
+    "firstName": "Daisy",
+    "lastName": "Mou",
+    "grade": 11,
+    "studentNumber": "DM6767"
+  }
 ]

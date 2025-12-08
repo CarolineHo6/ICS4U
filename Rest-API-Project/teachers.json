@@ -1,50 +1,50 @@
 [
-    {
-        "id": 1,
-        "firstName": "Elaine",
-        "lastName": "Turner",
-        "email": "eturner@riversidehigh.edu",
-        "department": "Mathematics",
-        "room": "B201"
-    },
-    {
-        "id": 2,
-        "firstName": "Marcus",
-        "lastName": "Nguyen",
-        "email": "mnguyen@riversidehigh.edu",
-        "department": "Science",
-        "room": "C102"
-    },
-    {
-        "id": 3,
-        "firstName": "Natalie",
-        "lastName": "Jenkins",
-        "email": "njenkins@riversidehigh.edu",
-        "department": "English",
-        "room": "A104"
-    },
-    {
-        "id": 4,
-        "firstName": "Victor",
-        "lastName": "Ramirez",
-        "email": "vramirez@riversidehigh.edu",
-        "department": "History",
-        "room": "D306"
-    },
-    {
-        "id": 5,
-        "firstName": "Sophia",
-        "lastName": "Choi",
-        "email": "schoi@riversidehigh.edu",
-        "department": "Art",
-        "room": "E110"
-    },
-    {
-        "id": 6,
-        "firstName": "Liam",
-        "lastName": "O'Brien",
-        "email": "lobrien@riversidehigh.edu",
-        "department": "Physical Education",
-        "room": "Gym1"
-    }
+  {
+    "id": 2,
+    "firstName": "Marcus",
+    "lastName": "Nguyen",
+    "email": "mnguyen@riversidehigh.edu",
+    "department": "Science",
+    "room": "C102"
+  },
+  {
+    "id": 3,
+    "firstName": "Natalie",
+    "lastName": "Jenkins",
+    "email": "njenkins@riversidehigh.edu",
+    "department": "English",
+    "room": "A104"
+  },
+  {
+    "id": 4,
+    "firstName": "Victor",
+    "lastName": "Ramirez",
+    "email": "vramirez@riversidehigh.edu",
+    "department": "History",
+    "room": "D306"
+  },
+  {
+    "id": 5,
+    "firstName": "Sophia",
+    "lastName": "Choi",
+    "email": "schoi@riversidehigh.edu",
+    "department": "Art",
+    "room": "E110"
+  },
+  {
+    "id": 6,
+    "firstName": "Liam",
+    "lastName": "O'Brien",
+    "email": "lobrien@riversidehigh.edu",
+    "department": "Physical Education",
+    "room": "Gym1"
+  },
+  {
+    "id": 7,
+    "firstName": "Emma",
+    "lastName": "Wong",
+    "email": "emma.wong@example.com",
+    "department": "Math",
+    "room": "202"
+  }
 ]

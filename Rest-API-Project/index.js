@@ -1,4 +1,4 @@
-// ADDED TRY AND CATCH STUFF TO EACH ROUTE FOR EXTRA ERROR CHECKING
+// ADDED TRY AND CATCH STUFF IN EACH ROUTE FOR EXTRA ERROR CHECKING
 // importing express and file system (reading and writing files) and path (file path handling)
 import express from 'express';
 import fs from 'fs';
@@ -9,6 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // initialize
 const app = express();
+const PORT = 3000; ``
 
 // for parsing payload requests
 app.use(express.json());
@@ -49,8 +50,8 @@ let nextStudentsId = students.reduce((max, s) => Math.max(max, s.id), 0) + 1;
 let nextTestsId = tests.reduce((max, t) => Math.max(max, t.id), 0) + 1;
 
 // start server on port 3000
-app.listen(3000, () => {
-    console.log(`Server running on http://localhost:3000`);
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
 });
 
 app.get("/teachers", (req, res) => res.json(teachers));
@@ -158,15 +159,22 @@ app.get("/courses/:id", (req, res) => {
 // create a course
 app.post("/courses", (req, res) => {
     try {
+        if (!req.body) {
+            return res.status(400).json({ error: "No request body found" });
+        }
         const { code, name, teacherId, semester, room, schedule } = req.body;
         if (!code || !name || !teacherId || !semester || !room || !schedule) {
             return res.status(400).json({ error: "Missing fields" });
-        };
+        }
+        const teacherExists = teachers.some(t => t.id === Number(teacherId));
+        if (!teacherExists) {
+            return res.status(400).json({ error: "Teacher does not exist" });
+        }
         const newCourse = {
             id: nextCoursesId++,
             code,
             name,
-            teacherId,
+            teacherId: Number(teacherId),
             semester,
             room,
             schedule
@@ -174,10 +182,11 @@ app.post("/courses", (req, res) => {
         courses.push(newCourse);
         saveJson(COURSES_FILE, courses);
         res.status(201).json(newCourse);
+        console.log("Creating course:", newCourse);
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
-    };
+    }
 });
 
 // update a course and validate teacherId if changed
