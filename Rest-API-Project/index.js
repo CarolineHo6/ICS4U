@@ -1,11 +1,24 @@
 // ADDED TRY AND CATCH STUFF IN EACH ROUTE FOR EXTRA ERROR CHECKING
 // importing express and file system (reading and writing files) and path (file path handling)
+import mongoose from 'mongoose';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import Course from './models/Courses.js';
+import Teacher from './models/Teachers.js';
+import Student from './models/Students.js';
+import Test from './models/Tests.js';
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const uri = 'mongodb+srv://carolinecmho_db_user:Ueqq4xVDSpD6uQ6y@cluster0.a0dsa4p.mongodb.net/';
+
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => console.log("Connected to MongoDB Atlas"))
+    .catch(err => console.error("MongoDB connection error:", err));
 
 // initialize
 const app = express();
@@ -157,32 +170,21 @@ app.get("/courses/:id", (req, res) => {
 });
 
 // create a course
-app.post("/courses", (req, res) => {
+app.post("/courses", async (req, res) => {
     try {
-        if (!req.body) {
-            return res.status(400).json({ error: "No request body found" });
-        }
         const { code, name, teacherId, semester, room, schedule } = req.body;
         if (!code || !name || !teacherId || !semester || !room || !schedule) {
             return res.status(400).json({ error: "Missing fields" });
         }
-        const teacherExists = teachers.some(t => t.id === Number(teacherId));
+
+        const teacherExists = await Teacher.findById(teacherId);
         if (!teacherExists) {
-            return res.status(400).json({ error: "Teacher does not exist" });
+            return res.status(400).json({ error: "Teacher not found" });
         }
-        const newCourse = {
-            id: nextCoursesId++,
-            code,
-            name,
-            teacherId: Number(teacherId),
-            semester,
-            room,
-            schedule
-        };
-        courses.push(newCourse);
-        saveJson(COURSES_FILE, courses);
+
+        const newCourse = new Course({ code, name, teacherId, semester, room, schedule });
+        await newCourse.save();
         res.status(201).json(newCourse);
-        console.log("Creating course:", newCourse);
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
@@ -193,7 +195,7 @@ app.post("/courses", (req, res) => {
 app.put("/courses/:id", (req, res) => {
     try {
         const id = Number(req.params.id);
-        const course = courses.find(c => c.id === id);
+        const course = courses.find(c => c.id === id);\
         if (!course) {
             return res.status(404).json({ error: "Course not found" });
         };
