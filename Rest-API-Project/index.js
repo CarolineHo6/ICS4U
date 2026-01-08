@@ -50,11 +50,26 @@ async function getNextLegacyId(col) {
     return Number(doc[0].id) + 1;
 }
 
-function mustBeNumber(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : null;
+// Put this near the top (after imports). It lets routes accept either ObjectId _id or string _id.
+function idFilter(idParam) {
+    const id = String(idParam);
+    return ObjectId.isValid(id)
+        ? { $or: [{ _id: new ObjectId(id) }, { _id: id }] }
+        : { _id: id };
 }
 
+// Same idea, but for foreign keys stored as either ObjectId or string in your documents
+function fkFilter(field, idValue) {
+    const id = String(idValue);
+    return ObjectId.isValid(id)
+        ? { $or: [{ [field]: new ObjectId(id) }, { [field]: id }] }
+        : { [field]: id };
+}
+
+function normalizeIdForStorage(idValue) {
+    const id = String(idValue);
+    return ObjectId.isValid(id) ? new ObjectId(id) : id;
+}
 
 /* <--------------- Teachers ---------------> */
 
@@ -141,17 +156,20 @@ app.delete("/teachers/:id", async (req, res) => {
 
 // get all courses
 app.get("/courses", async (req, res) => {
-    const courses = await coursesCol.find().toArray();
-    res.json(courses);
+    try {
+        const courses = await coursesCol.find().toArray();
+        res.json(courses);
+    } catch (err) {
+        console.error("Internal server error", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
-// get a course
+// get a course (accepts ObjectId or string _id)
 app.get("/courses/:id", async (req, res) => {
     try {
-        const course = await coursesCol.findOne({ _id: new ObjectId(req.params.id) });
-        if (!course) {
-            return res.status(404).json({ error: "Course not found" });
-        }
+        const course = await coursesCol.findOne(idFilter(req.params.id));
+        if (!course) return res.status(404).json({ error: "Course not found" });
         res.json(course);
     } catch (err) {
         console.error("Internal server error", err);
@@ -159,7 +177,7 @@ app.get("/courses/:id", async (req, res) => {
     }
 });
 
-// create a course
+// create a course (teacherId can be ObjectId-ish or string)
 app.post("/courses", async (req, res) => {
     try {
         const { code, name, teacherId, semester, room, schedule } = req.body;
@@ -167,43 +185,60 @@ app.post("/courses", async (req, res) => {
             return res.status(400).json({ error: "Missing fields" });
         }
 
-        const teacherExists = await teachersCol.findOne({ _id: new ObjectId(teacherId) });
+        // teacher exists (match teachers._id as ObjectId OR string)
+        const teacherExists = await teachersCol.findOne(idFilter(teacherId));
         if (!teacherExists) {
             return res.status(400).json({ error: "Teacher doesn't exist" });
         }
 
+        // store teacherId in a consistent way if possible
+        const teacherIdStored = normalizeIdForStorage(teacherId);
+
         const result = await coursesCol.insertOne({
             code,
             name,
-            teacherId: new ObjectId(teacherId),
+            teacherId: teacherIdStored,
             semester,
             room,
-            schedule
+            schedule,
         });
 
-        res.status(201).json({ _id: result.insertedId, code, name, teacherId, semester, room, schedule });
+        res.status(201).json({
+            _id: result.insertedId,
+            code,
+            name,
+            teacherId: teacherIdStored,
+            semester,
+            room,
+            schedule,
+        });
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// update a course and validate teacherId if changed
+// update a course (accepts ObjectId or string for :id, and teacherId)
 app.put("/courses/:id", async (req, res) => {
     try {
-        const update = {};
         const { code, name, teacherId, semester, room, schedule } = req.body;
 
-        if (!code && !name && !teacherId && !semester && !room && !schedule) {
+        if (
+            code === undefined &&
+            name === undefined &&
+            teacherId === undefined &&
+            semester === undefined &&
+            room === undefined &&
+            schedule === undefined
+        ) {
             return res.status(400).json({ error: "Missing fields" });
         }
 
+        const update = {};
         if (teacherId !== undefined) {
-            const teacherExists = await teachersCol.findOne({ _id: new ObjectId(teacherId) });
-            if (!teacherExists) {
-                return res.status(400).json({ error: "Teacher doesn't exist" });
-            }
-            update.teacherId = new ObjectId(teacherId);
+            const teacherExists = await teachersCol.findOne(idFilter(teacherId));
+            if (!teacherExists) return res.status(400).json({ error: "Teacher doesn't exist" });
+            update.teacherId = normalizeIdForStorage(teacherId);
         }
 
         if (code !== undefined) update.code = code;
@@ -212,53 +247,52 @@ app.put("/courses/:id", async (req, res) => {
         if (room !== undefined) update.room = room;
         if (schedule !== undefined) update.schedule = schedule;
 
-        const result = await coursesCol.findOneAndUpdate(
-            { _id: new ObjectId(req.params.id) },
-            { $set: update },
-            { returnDocument: "after" }
-        );
+        const updateResult = await coursesCol.updateOne(idFilter(req.params.id), { $set: update });
 
-        if (!result.value) {
+        if (updateResult.matchedCount === 0) {
             return res.status(404).json({ error: "Course not found" });
         }
 
-        res.json(result.value);
+        const updatedCourse = await coursesCol.findOne(idFilter(req.params.id));
+        res.json(updatedCourse);
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// block delete course
+// delete course (accepts ObjectId or string _id)
 app.delete("/courses/:id", async (req, res) => {
     try {
-        const result = await coursesCol.findOneAndDelete({ _id: new ObjectId(req.params.id) });
-        if (!result.value) {
+        const deleteResult = await coursesCol.deleteOne(idFilter(req.params.id));
+        if (deleteResult.deletedCount === 0) {
             return res.status(404).json({ error: "Course not found" });
         }
-        res.status(200).json(result.value);
+        res.status(200).json({ message: "Deleted" });
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 /* <--------------- Students ---------------> */
 
 // get all students
 app.get("/students", async (req, res) => {
-    const students = await studentsCol.find().toArray();
-    res.json(students);
+    try {
+        const students = await studentsCol.find().toArray();
+        res.json(students);
+    } catch (err) {
+        console.error("Internal server error", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
-// get a student
+// get a student (accepts ObjectId or string _id)
 app.get("/students/:id", async (req, res) => {
     try {
-        const student = await studentsCol.findOne({ _id: new ObjectId(req.params.id) });
-        if (!student) {
-            return res.status(404).json({ error: "Student not found" });
-        }
+        const student = await studentsCol.findOne(idFilter(req.params.id));
+        if (!student) return res.status(404).json({ error: "Student not found" });
         res.json(student);
     } catch (err) {
         console.error("Internal server error", err);
@@ -270,80 +304,87 @@ app.get("/students/:id", async (req, res) => {
 app.post("/students", async (req, res) => {
     try {
         const { firstName, lastName, grade, studentNumber } = req.body;
-        if (!firstName || !lastName || !grade || !studentNumber) {
+        if (!firstName || !lastName || grade === undefined || !studentNumber) {
             return res.status(400).json({ error: "Missing field" });
         }
 
-        const result = await studentsCol.insertOne({ firstName, lastName, grade, studentNumber });
-        res.status(201).json({ _id: result.insertedId, firstName, lastName, grade, studentNumber });
+        // Optional: prevent client-provided _id from creating string ids
+        const doc = { firstName, lastName, grade, studentNumber };
+        const result = await studentsCol.insertOne(doc);
+
+        res.status(201).json({ _id: result.insertedId, ...doc });
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// change students
+// change students (accepts ObjectId or string _id)
 app.put("/students/:id", async (req, res) => {
     try {
-        const update = {};
         const { firstName, lastName, grade, studentNumber } = req.body;
 
-        if (!firstName && !lastName && !grade && !studentNumber) {
-            return res.status(401).json({ error: "Missing field" });
+        if (
+            firstName === undefined &&
+            lastName === undefined &&
+            grade === undefined &&
+            studentNumber === undefined
+        ) {
+            return res.status(400).json({ error: "Missing field" });
         }
 
+        const update = {};
         if (firstName !== undefined) update.firstName = firstName;
         if (lastName !== undefined) update.lastName = lastName;
         if (grade !== undefined) update.grade = grade;
         if (studentNumber !== undefined) update.studentNumber = studentNumber;
 
-        const result = await studentsCol.findOneAndUpdate(
-            { _id: new ObjectId(req.params.id) },
-            { $set: update },
-            { returnDocument: "after" }
-        );
+        const updateResult = await studentsCol.updateOne(idFilter(req.params.id), { $set: update });
 
-        if (!result.value) {
+        if (updateResult.matchedCount === 0) {
             return res.status(404).json({ error: "Student not found" });
         }
 
-        res.json(result.value);
+        const updatedStudent = await studentsCol.findOne(idFilter(req.params.id));
+        res.json(updatedStudent);
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// delete a student
+// delete a student (accepts ObjectId or string _id)
 app.delete("/students/:id", async (req, res) => {
     try {
-        const result = await studentsCol.findOneAndDelete({ _id: new ObjectId(req.params.id) });
-        if (!result.value) {
+        const deleteResult = await studentsCol.deleteOne(idFilter(req.params.id));
+        if (deleteResult.deletedCount === 0) {
             return res.status(404).json({ error: "Student not found" });
         }
-        res.status(200).json(result.value);
+        res.status(200).json({ message: "Deleted" });
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 /* <--------------- Tests ---------------> */
 
 // get tests
 app.get("/tests", async (req, res) => {
-    const tests = await testsCol.find().toArray();
-    res.json(tests);
+    try {
+        const tests = await testsCol.find().toArray();
+        res.json(tests);
+    } catch (err) {
+        console.error("Internal server error", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
 });
 
-// get a test
+// get a test (accepts ObjectId or string _id)
 app.get("/tests/:id", async (req, res) => {
     try {
-        const test = await testsCol.findOne({ _id: new ObjectId(req.params.id) });
-        if (!test) {
-            return res.status(404).json({ error: "Student not found" });
-        }
+        const test = await testsCol.findOne(idFilter(req.params.id));
+        if (!test) return res.status(404).json({ error: "Test not found" });
         res.json(test);
     } catch (err) {
         console.error("Internal server error", err);
@@ -351,88 +392,111 @@ app.get("/tests/:id", async (req, res) => {
     }
 });
 
-// create a new test
+// create a new test (studentId/courseId can be ObjectId-ish or string)
 app.post("/tests", async (req, res) => {
     try {
         const { studentId, courseId, testName, date, mark, outOf, weight } = req.body;
-        if (!studentId || !courseId || !testName || !date || !mark || !outOf || !weight) {
+        if (
+            !studentId ||
+            !courseId ||
+            !testName ||
+            !date ||
+            mark === undefined ||
+            outOf === undefined ||
+            weight === undefined
+        ) {
             return res.status(400).json({ error: "Missing field" });
         }
 
+        const studentIdStored = normalizeIdForStorage(studentId);
+        const courseIdStored = normalizeIdForStorage(courseId);
+
         const result = await testsCol.insertOne({
-            studentId: new ObjectId(studentId),
-            courseId: new ObjectId(courseId),
+            studentId: studentIdStored,
+            courseId: courseIdStored,
             testName,
             date,
             mark,
             outOf,
-            weight
+            weight,
         });
 
-        res.status(201).json({ _id: result.insertedId, studentId, courseId, testName, date, mark, outOf, weight });
+        res.status(201).json({
+            _id: result.insertedId,
+            studentId: studentIdStored,
+            courseId: courseIdStored,
+            testName,
+            date,
+            mark,
+            outOf,
+            weight,
+        });
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// update existing test
+// update existing test (accepts ObjectId or string _id, plus studentId/courseId)
 app.put("/tests/:id", async (req, res) => {
     try {
-        const update = {};
         const { studentId, courseId, testName, date, mark, outOf, weight } = req.body;
 
-        if (!studentId && !courseId && !testName && !date && !mark && !outOf && !weight) {
+        if (
+            studentId === undefined &&
+            courseId === undefined &&
+            testName === undefined &&
+            date === undefined &&
+            mark === undefined &&
+            outOf === undefined &&
+            weight === undefined
+        ) {
             return res.status(400).json({ error: "Missing field" });
         }
 
-        if (studentId !== undefined) update.studentId = new ObjectId(studentId);
-        if (courseId !== undefined) update.courseId = new ObjectId(courseId);
+        const update = {};
+        if (studentId !== undefined) update.studentId = normalizeIdForStorage(studentId);
+        if (courseId !== undefined) update.courseId = normalizeIdForStorage(courseId);
         if (testName !== undefined) update.testName = testName;
         if (date !== undefined) update.date = date;
         if (mark !== undefined) update.mark = mark;
         if (outOf !== undefined) update.outOf = outOf;
         if (weight !== undefined) update.weight = weight;
 
-        const result = await testsCol.findOneAndUpdate(
-            { _id: new ObjectId(req.params.id) },
-            { $set: update },
-            { returnDocument: "after" }
-        );
+        const updateResult = await testsCol.updateOne(idFilter(req.params.id), { $set: update });
 
-        if (!result.value) {
+        if (updateResult.matchedCount === 0) {
             return res.status(404).json({ error: "Test not found" });
         }
 
-        res.json(result.value);
+        const updatedTest = await testsCol.findOne(idFilter(req.params.id));
+        res.json(updatedTest);
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
-// delete tests
+// delete tests (accepts ObjectId or string _id)
 app.delete("/tests/:id", async (req, res) => {
     try {
-        const result = await testsCol.findOneAndDelete({ _id: new ObjectId(req.params.id) });
-        if (!result.value) {
+        const deleteResult = await testsCol.deleteOne(idFilter(req.params.id));
+        if (deleteResult.deletedCount === 0) {
             return res.status(404).json({ error: "Test not found" });
         }
-        res.status(200).json(result.value);
+        res.status(200).json({ message: "Deleted" });
     } catch (err) {
         console.error("Internal server error", err);
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
 
 /* <--------------- Extra Stuff ---------------> */
 
-// list all tests for a specific student
+// list all tests for a specific student (studentId stored as ObjectId OR string)
 app.get("/student/:id/tests", async (req, res) => {
     try {
-        const studentId = new ObjectId(req.params.id);
-        const studentTests = await testsCol.find({ studentId }).toArray();
+        const studentTests = await testsCol.find(fkFilter("studentId", req.params.id)).toArray();
         res.json(studentTests);
     } catch (err) {
         console.error("Internal server error", err);
@@ -440,11 +504,10 @@ app.get("/student/:id/tests", async (req, res) => {
     }
 });
 
-// list all tests for a specific course
+// list all tests for a specific course (courseId stored as ObjectId OR string)
 app.get("/courses/:id/tests", async (req, res) => {
     try {
-        const courseId = new ObjectId(req.params.id);
-        const courseTests = await testsCol.find({ courseId }).toArray();
+        const courseTests = await testsCol.find(fkFilter("courseId", req.params.id)).toArray();
         res.json(courseTests);
     } catch (err) {
         console.error("Internal server error", err);
@@ -452,18 +515,17 @@ app.get("/courses/:id/tests", async (req, res) => {
     }
 });
 
-// calculate the student's average across all tests weighted
+// calculate the student's average across all tests
 app.get("/students/:id/average", async (req, res) => {
     try {
-        const studentId = new ObjectId(req.params.id);
-        const studentTests = await testsCol.find({ studentId }).toArray();
+        const studentTests = await testsCol.find(fkFilter("studentId", req.params.id)).toArray();
         if (studentTests.length === 0) {
             return res.status(404).json({ error: "Student didnt take any tests" });
         }
-        const totalPercent = studentTests.reduce((sum, test) => {
-            return sum + (test.mark / test.outOf) * 100;
-        }, 0);
+
+        const totalPercent = studentTests.reduce((sum, test) => sum + (test.mark / test.outOf) * 100, 0);
         const average = totalPercent / studentTests.length;
+
         res.json({ studentId: req.params.id, average: average.toFixed(2) });
     } catch (err) {
         console.error("Internal server error", err);
@@ -474,15 +536,14 @@ app.get("/students/:id/average", async (req, res) => {
 // calculate class average
 app.get("/courses/:id/average", async (req, res) => {
     try {
-        const courseId = new ObjectId(req.params.id);
-        const classTests = await testsCol.find({ courseId }).toArray();
+        const classTests = await testsCol.find(fkFilter("courseId", req.params.id)).toArray();
         if (classTests.length === 0) {
             return res.status(404).json({ error: "course doesnt exist" });
         }
-        const totalPercent = classTests.reduce((sum, test) => {
-            return sum + (test.mark / test.outOf) * 100;
-        }, 0);
+
+        const totalPercent = classTests.reduce((sum, test) => sum + (test.mark / test.outOf) * 100, 0);
         const average = totalPercent / classTests.length;
+
         res.json({ courseId: req.params.id, average: average.toFixed(2) });
     } catch (err) {
         console.error("Internal server error", err);
