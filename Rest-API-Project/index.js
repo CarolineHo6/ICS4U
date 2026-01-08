@@ -1,8 +1,12 @@
 // ADDED TRY AND CATCH STUFF TO EACH ROUTE FOR EXTRA ERROR CHECKING
 // importing express and file system (reading and writing files) and path (file path handling)
 import express from 'express';
-import dotenv from "dotenv";
-import { MongoClient, ObjectId } from "mongodb";
+import { connectDB, getCollections } from "./db.js";
+
+let teachersCol;
+let coursesCol;
+let studentsCol;
+let testsCol;
 
 dotenv.config();
 // initialize
@@ -26,29 +30,17 @@ if (!MONGODB_URI) {
     throw new Error("Missing MONGODB_URI in environment variables");
 };
 
-const client = new MongoClient(MONGODB_URI);
-
-let db;
-let teachersCol;
-let coursesCol;
-let studentsCol;
-let testsCol;
-
-async function connectDB() {
-    await client.connect();
-    db = client.db(); // uses db name from URI, or default
-    teachersCol = db.collection("teachers");
-    coursesCol = db.collection("courses");
-    studentsCol = db.collection("students");
-    testsCol = db.collection("tests");
-    console.log("Connected to MongoDB Atlas");
-}
-
-async function getNextLegacyId(col) {
-    const doc = await col.find().sort({ id: -1 }).limit(1).toArray();
-    if (doc.length === 0) return 1;
-    return Number(doc[0].id) + 1;
-}
+connectDB()
+    .then(() => {
+        const cols = getCollections();
+        teachersCol = cols.teachersCol;
+        coursesCol = cols.coursesCol;
+        studentsCol = cols.studentsCol;
+        testsCol = cols.testsCol;
+    })
+    .catch(err => {
+        console.error("MongoDB connection failed:", err);
+    });
 
 // Put this near the top (after imports). It lets routes accept either ObjectId _id or string _id.
 function idFilter(idParam) {
