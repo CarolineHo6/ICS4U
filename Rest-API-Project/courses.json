@@ -52,5 +52,14 @@
     "semester": "Fall",
     "room": "B204",
     "schedule": "Mon/Wed/Fri"
+  },
+  {
+    "id": 108,
+    "code": "OCT1152",
+    "name": "MSK foundations",
+    "teacherId": 4,
+    "semester": "Fall",
+    "room": "104",
+    "schedule": "Tue/Thu"
   }
 ]
