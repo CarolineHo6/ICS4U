@@ -90,38 +90,49 @@ app.post("/teachers", async (req, res) => {
 // find teacher then replace data if given replacement data
 app.put("/teachers/:id", async (req, res) => {
     try {
-      const id = req.params.id;
-      const updates = req.body;
-  
-      // Build a filter that works whether _id is ObjectId or a string
-      const filter = ObjectId.isValid(id)
-        ? { $or: [{ _id: new ObjectId(id) }, { _id: id }] }
-        : { _id: id };
-  
-      const updateResult = await teachersCol.updateOne(filter, { $set: updates });
-  
-      if (updateResult.matchedCount === 0) {
-        return res.status(404).json({ error: "Teacher not found" });
-      }
-  
-      // Fetch the updated doc using the same filter style
-      const updatedTeacher = await teachersCol.findOne(filter);
-      return res.status(200).json(updatedTeacher);
+        const id = req.params.id;
+        const updates = req.body;
+
+        // Build a filter that works whether _id is ObjectId or a string
+        const filter = ObjectId.isValid(id)
+            ? { $or: [{ _id: new ObjectId(id) }, { _id: id }] }
+            : { _id: id };
+
+        const updateResult = await teachersCol.updateOne(filter, { $set: updates });
+
+        if (updateResult.matchedCount === 0) {
+            return res.status(404).json({ error: "Teacher not found" });
+        }
+
+        // Fetch the updated doc using the same filter style
+        const updatedTeacher = await teachersCol.findOne(filter);
+        return res.status(200).json(updatedTeacher);
     } catch (err) {
-      console.error("Error updating teacher:", err);
-      return res.status(500).json({ error: "Internal server error" });
+        console.error("Error updating teacher:", err);
+        return res.status(500).json({ error: "Internal server error" });
     }
-  });  
+});
 
 // find teacher w id and then splice and delete the whole thing (block deletion)
 app.delete("/teachers/:id", async (req, res) => {
     try {
-        const result = await teachersCol.findOneAndDelete({ _id: new ObjectId(req.params.id) });
-        if (!result.value) return res.status(404).json({ error: "Teacher not found" });
-        res.json({ message: "Deleted", teacher: result.value });
+        const id = req.params.id;
+
+        // Works whether _id is ObjectId or string
+        const filter = ObjectId.isValid(id)
+            ? { $or: [{ _id: new ObjectId(id) }, { _id: id }] }
+            : { _id: id };
+
+        const deleteResult = await teachersCol.deleteOne(filter);
+
+        if (deleteResult.deletedCount === 0) {
+            return res.status(404).json({ error: "Teacher not found" });
+        }
+
+        return res.status(200).json({ message: "Deleted" });
     } catch (err) {
         console.error("Error deleting teacher:", err);
-        res.status(400).json({ error: "Invalid ID" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
