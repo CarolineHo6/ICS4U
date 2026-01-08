@@ -90,19 +90,29 @@ app.post("/teachers", async (req, res) => {
 // find teacher then replace data if given replacement data
 app.put("/teachers/:id", async (req, res) => {
     try {
-        const updates = req.body;  // e.g., { "subject": "Chemistry" }
-        const result = await teachersCol.findOneAndUpdate(
-            { _id: new ObjectId(req.params.id) },
-            { $set: updates },
-            { returnDocument: "after" }
-        );
-        if (!result.value) return res.status(404).json({ error: "Teacher not found" });
-        res.json(result.value);
+      const id = req.params.id;
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+      }
+  
+      const updates = req.body;
+  
+      const updateResult = await teachersCol.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updates }
+      );
+  
+      if (updateResult.matchedCount === 0) {
+        return res.status(404).json({ error: "Teacher not found" });
+      }
+  
+      const updatedTeacher = await teachersCol.findOne({ _id: new ObjectId(id) });
+      res.json(updatedTeacher);
     } catch (err) {
-        console.error("Error updating teacher:", err);
-        res.status(400).json({ error: "Invalid ID or data" });
+      console.error("Error updating teacher:", err);
+      res.status(500).json({ error: "Internal server error" });
     }
-});
+  });  
 
 // find teacher w id and then splice and delete the whole thing (block deletion)
 app.delete("/teachers/:id", async (req, res) => {
