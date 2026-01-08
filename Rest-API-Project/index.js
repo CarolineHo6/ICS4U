@@ -91,26 +91,25 @@ app.post("/teachers", async (req, res) => {
 app.put("/teachers/:id", async (req, res) => {
     try {
       const id = req.params.id;
-      if (!ObjectId.isValid(id)) {
-        return res.status(400).json({ error: "Invalid ID format" });
-      }
-  
       const updates = req.body;
   
-      const updateResult = await teachersCol.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: updates }
-      );
+      // Build a filter that works whether _id is ObjectId or a string
+      const filter = ObjectId.isValid(id)
+        ? { $or: [{ _id: new ObjectId(id) }, { _id: id }] }
+        : { _id: id };
+  
+      const updateResult = await teachersCol.updateOne(filter, { $set: updates });
   
       if (updateResult.matchedCount === 0) {
         return res.status(404).json({ error: "Teacher not found" });
       }
   
-      const updatedTeacher = await teachersCol.findOne({ _id: new ObjectId(id) });
-      res.json(updatedTeacher);
+      // Fetch the updated doc using the same filter style
+      const updatedTeacher = await teachersCol.findOne(filter);
+      return res.status(200).json(updatedTeacher);
     } catch (err) {
       console.error("Error updating teacher:", err);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   });  
 
