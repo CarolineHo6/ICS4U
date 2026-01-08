@@ -10,6 +10,13 @@ const app = express();
 // for parsing payload requests
 app.use(express.json());
 
+app.get("/health", (req, res) => {
+    res.status(db ? 200 : 503).json({
+        ok: Boolean(db),
+        dbConnected: Boolean(db)
+    });
+});
+
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -463,13 +470,15 @@ app.get("/courses/:id/average", async (req, res) => {
     }
 });
 
-// Start DB and server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
+// Connect to MongoDB AFTER server starts
 connectDB()
     .then(() => {
-        app.listen(PORT, () => {
-            console.log(`Connected to MongoDB Atlas\nServer running on port ${PORT}`);
-        });
+        console.log("Connected to MongoDB Atlas");
     })
     .catch(err => {
-        console.error("Error connecting to MongoDB:", err);
+        console.error("MongoDB connection failed:", err);
     });
