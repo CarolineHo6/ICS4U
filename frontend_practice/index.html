@@ -1,14 +1,160 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Records</title>
+    <link rel="stylesheet" href="style/style.css">
 </head>
 
 <body>
-
+    <header>
+        <h1>User Records</h1>
+        <p>
+            Add a user with the form on the left and display records in the table on the right.
+            <span class="hint">(No JavaScript—form submission requires a server to actually add rows.)</span>
+        </p>
+    </header>
+    <main class="wrap">
+        <!-- FORM -->
+        <section class="card" aria-label="Add user form">
+            <div class="card-head">
+                <h2>Add a Record</h2>
+                <span class="hint">Fields marked * are required</span>
+            </div>
+            <!--
+        No JS version:
+        - Set action to your backend endpoint (e.g., /add-user)
+        - Use method="post" to send form data
+      -->
+            <form action="/add-user" method="post" autocomplete="on">
+                <fieldset>
+                    <legend>Identity</legend>
+                    <div class="grid">
+                        <label>
+                            Full Name *
+                            <input name="name" type="text" placeholder="e.g., Kevin DesLauriers" required />
+                        </label>
+                        <div class="grid two">
+                            <label>
+                                Age *
+                                <input name="age" type="number" min="0" max="130" placeholder="e.g., 52" required />
+                            </label>
+                            <label>
+                                Gender *
+                                <select name="gender" required>
+                                    <option value="" selected disabled>Choose…</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Non-binary">Non-binary</option>
+                                    <option value="Prefer not to say">Prefer not to say</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Contact</legend>
+                    <div class="grid">
+                        <label>
+                            Phone Number *
+                            <input name="phone" type="tel" placeholder="e.g., (416) 555-0123" required />
+                        </label>
+                        <label>
+                            Address *
+                            <textarea name="address" placeholder="Street, City, Province/State, Postal/ZIP"
+                                required></textarea>
+                        </label>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Account</legend>
+                    <div class="grid two">
+                        <label>
+                            Username *
+                            <input name="username" type="text" placeholder="e.g., kevin_d" required />
+                        </label>
+                        <label>
+                            Password *
+                            <input name="password" type="password" placeholder="Enter a password" required />
+                        </label>
+                    </div>
+                    <div class="row">
+                        <span class="req">Tip: Use HTTPS + server-side validation for passwords.</span>
+                    </div>
+                </fieldset>
+                <div class="actions">
+                    <button class="btn primary" type="submit">Add Record</button>
+                    <button class="btn ghost" type="reset">Clear</button>
+                </div>
+            </form>
+            <div class="note">
+                <strong>Note:</strong> Without JavaScript, the browser can’t update the table on this page after submit.
+                Point <code>action</code> to a server route that saves the record and re-renders the page with the
+                updated table.
+            </div>
+        </section>
+        <!-- TABLE -->
+        <section class="card table-wrap" aria-label="User records table">
+            <div class="card-head">
+                <h2>Current Records</h2>
+                <span class="hint">Example rows below</span>
+            </div>
+            <div class="table-scroller" role="region" aria-label="Scrollable user records table" tabindex="0">
+                <table id="user-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Jordan Lee</td>
+                            <td>(416) 555-0188</td>
+                            <td>22 Queen St W, Toronto, ON</td>
+                            <td><span class="pill">Non-binary</span></td>
+                            <td>29</td>
+                            <td>jlee29</td>
+                            <td><span class="pill ok">••••••••</span></td>
+                        </tr>
+                        <tr>
+                            <td>Amara Singh</td>
+                            <td>(647) 555-0134</td>
+                            <td>101 Bloor St E, Toronto, ON</td>
+                            <td><span class="pill">Female</span></td>
+                            <td>34</td>
+                            <td>amara.s</td>
+                            <td><span class="pill ok">••••••••</span></td>
+                        </tr>
+                        <tr>
+                            <td>Chris Nguyen</td>
+                            <td>(905) 555-0109</td>
+                            <td>8 Bayview Ave, Toronto, ON</td>
+                            <td><span class="pill">Male</span></td>
+                            <td>41</td>
+                            <td>cnguyen</td>
+                            <td><span class="pill ok">••••••••</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="note">
+                For real use, don’t display passwords in plaintext. Store hashed passwords on the server and never
+                render them back.
+            </div>
+        </section>
+    </main>
+    <footer>
+        HTML + CSS only. If you want this to actually “add to the table” without JS, you need a server to handle the
+        POST.
+    </footer>
 </body>
 
 </html>
