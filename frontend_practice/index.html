@@ -13,22 +13,16 @@
         <h1>User Records</h1>
         <p>
             Add a user with the form on the left and display records in the table on the right.
-            <span class="hint">(No JavaScript—form submission requires a server to actually add rows.)</span>
         </p>
     </header>
-    <main class="wrap">
+    <main class="wrap">`
         <!-- FORM -->
         <section class="card" aria-label="Add user form">
             <div class="card-head">
                 <h2>Add a Record</h2>
                 <span class="hint">Fields marked * are required</span>
             </div>
-            <!--
-        No JS version:
-        - Set action to your backend endpoint (e.g., /add-user)
-        - Use method="post" to send form data
-      -->
-            <form action="/add-user" method="post" autocomplete="on">
+            <form id="add-user-form" autocomplete="on">
                 <fieldset>
                     <legend>Identity</legend>
                     <div class="grid">
@@ -80,26 +74,17 @@
                             <input name="password" type="password" placeholder="Enter a password" required />
                         </label>
                     </div>
-                    <div class="row">
-                        <span class="req">Tip: Use HTTPS + server-side validation for passwords.</span>
-                    </div>
                 </fieldset>
                 <div class="actions">
                     <button class="btn primary" type="submit">Add Record</button>
                     <button class="btn ghost" type="reset">Clear</button>
                 </div>
             </form>
-            <div class="note">
-                <strong>Note:</strong> Without JavaScript, the browser can’t update the table on this page after submit.
-                Point <code>action</code> to a server route that saves the record and re-renders the page with the
-                updated table.
-            </div>
         </section>
         <!-- TABLE -->
         <section class="card table-wrap" aria-label="User records table">
             <div class="card-head">
                 <h2>Current Records</h2>
-                <span class="hint">Example rows below</span>
             </div>
             <div class="table-scroller" role="region" aria-label="Scrollable user records table" tabindex="0">
                 <table id="user-table">
@@ -112,49 +97,96 @@
                             <th>Age</th>
                             <th>Username</th>
                             <th>Password</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Jordan Lee</td>
-                            <td>(416) 555-0188</td>
-                            <td>22 Queen St W, Toronto, ON</td>
-                            <td><span class="pill">Non-binary</span></td>
-                            <td>29</td>
-                            <td>jlee29</td>
-                            <td><span class="pill ok">••••••••</span></td>
-                        </tr>
-                        <tr>
-                            <td>Amara Singh</td>
-                            <td>(647) 555-0134</td>
-                            <td>101 Bloor St E, Toronto, ON</td>
-                            <td><span class="pill">Female</span></td>
-                            <td>34</td>
-                            <td>amara.s</td>
-                            <td><span class="pill ok">••••••••</span></td>
-                        </tr>
-                        <tr>
-                            <td>Chris Nguyen</td>
-                            <td>(905) 555-0109</td>
-                            <td>8 Bayview Ave, Toronto, ON</td>
-                            <td><span class="pill">Male</span></td>
-                            <td>41</td>
-                            <td>cnguyen</td>
-                            <td><span class="pill ok">••••••••</span></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="note">
-                For real use, don’t display passwords in plaintext. Store hashed passwords on the server and never
-                render them back.
-            </div>
         </section>
     </main>
-    <footer>
-        HTML + CSS only. If you want this to actually “add to the table” without JS, you need a server to handle the
-        POST.
-    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userForm = document.querySelector('#add-user-form');
+            const userTableBody = document.querySelector('#user-table tbody');
+
+            fetchUsers();
+
+            userForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(userForm);
+                const userData = Object.fromEntries(formData.entries());
+
+                try {
+                    const response = await fetch('/user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
+
+                    if (response.ok) {
+                        userForm.reset();
+                        fetchUsers();
+                    } else {
+                        const error = await response.json();
+                        alert('Error adding user: ' + error.error);
+                    }
+                } catch (err) {
+                    console.error('Fetch error:', err);
+                }
+            });
+
+            async function fetchUsers() {
+                try {
+                    const response = await fetch('/user');
+                    const users = await response.json();
+                    renderTable(users);
+                } catch (err) {
+                    console.error('Error fetching users:', err);
+                }
+            }
+
+            function renderTable(users) {
+                userTableBody.innerHTML = '';
+                users.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.name || ''}</td>
+                        <td>${user.phone || ''}</td>
+                        <td>${user.address || ''}</td>
+                        <td><span class="pill">${user.gender || ''}</span></td>
+                        <td>${user.age || ''}</td>
+                        <td>${user.username || ''}</td>
+                        <td><span class="pill ok">••••••••</span></td>
+                        <td>
+                            <button class="btn ghost delete-btn" data-id="${user._id}">Delete</button>
+                        </td>
+                    `;
+                    userTableBody.appendChild(row);
+                });
+
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', () => deleteUser(btn.dataset.id));
+                });
+            }
+
+            async function deleteUser(id) {
+                if (!confirm('Are you sure you want to delete this user?')) return;
+                try {
+                    const response = await fetch(`/user/${id}`, { method: 'DELETE' });
+                    if (response.ok) {
+                        fetchUsers();
+                    } else {
+                        alert('Failed to delete user');
+                    }
+                } catch (err) {
+                    console.error('Delete error:', err);
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
