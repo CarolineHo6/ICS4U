@@ -9,9 +9,10 @@
     <button class="button" @click="addToCart">
       Add to Cart
     </button>
-    <button @click="removeFromCart">
+    <button class="button" @click="removeFromCart" :disabled="cart === 0" :class="{ disabledButton: cart === 0 }">
       Remove from Cart
     </button>
+    <button @click="resetCart">Reset Cart</button>
 
 
     <div v-for="variant in variants" :key="variant.id" @mouseover="updateImage(variant.image)">
@@ -58,12 +59,14 @@
     <div v-for="variant in variants" :key="variant.id" class="color-circle" @mouseover="updateImage(variant.image)"
       :style="{ backgroundColor: variant.color }">
     </div>
-    <div :style="{ backgroundColor: variant.color }"></div>
     <!-- <button class="button" :class="{ disabledButton: !inStock }" :disabled="!inStock" @click="addToCart">
       Add to Cart
     </button> -->
 
-
+    <!-- multiple classes -->
+    <div class="color-circle active"></div>
+    <div :class="isActive ? activeClass : ''"></div>
+    <img :src="image" :class="{ 'out-of-stock-img': !inStock }"/>
   </div>
 </template>
 
@@ -87,6 +90,9 @@ const variants = ref([
 const sizes = ref(['S', 'M', 'L', 'XL'])
 const cart = ref(0)
 
+function resetCart() {
+  cart.value = 0;
+}
 function removeFromCart() {
   if (cart.value > 0) { cart.value -= 1 }
   else { cart.value = 0 }
@@ -122,5 +128,22 @@ function switchToGreen() {
 .arrow-icon {
   width: 18px;
   height: 18px;
+}
+
+.color-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  display: inline-block;
+  margin: 6px 10px 6px 0;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.color-circle:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  border-color: #0b63ce;
 }
 </style>
